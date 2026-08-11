@@ -29,9 +29,7 @@ public class Service {
     @Column(columnDefinition = "TEXT")
     private String fullDescription;
 
-    // Hibernate mapea automáticamente la columna JSONB de PostgreSQL
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "TEXT")
     private String features;
 
     @Column(length = 50)
