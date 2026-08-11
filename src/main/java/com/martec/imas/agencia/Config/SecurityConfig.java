@@ -46,13 +46,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "https://www.imasagenciaaduanal.com",
+                "http://localhost:[*]",
+                "http://127.0.0.1:[*]",
+                "https://*.imasagenciaaduanal.com",
                 "https://imasagenciaaduanal.com",
-                "http://www.imasagenciaaduanal.com",
+                "http://*.imasagenciaaduanal.com",
                 "http://imasagenciaaduanal.com",
-                "*"
+                "https://*.railway.app",
+                "https://*.up.railway.app"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
