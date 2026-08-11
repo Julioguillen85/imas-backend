@@ -13,7 +13,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/public/leads")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class PublicLeadController {
 
     private final LeadManagementService leadManagementService;

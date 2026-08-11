@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/admin/services")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class AdminServiceController {
 
     private final ServiceManagementService serviceManagementService;
