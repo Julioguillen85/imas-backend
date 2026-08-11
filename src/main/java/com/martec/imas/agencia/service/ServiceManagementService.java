@@ -8,18 +8,21 @@ import com.martec.imas.agencia.entity.Service;
 import com.martec.imas.agencia.repository.CategoryRepository;
 import com.martec.imas.agencia.repository.ServiceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
+@Transactional
 public class ServiceManagementService {
 
     private final ServiceRepository serviceRepository;
     private final CategoryRepository categoryRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Transactional(readOnly = true)
     public List<ServiceResponseDTO> getAllActiveServices() {
         return serviceRepository.findByIsActiveTrueOrderByDisplayOrderAsc()
                 .stream()
