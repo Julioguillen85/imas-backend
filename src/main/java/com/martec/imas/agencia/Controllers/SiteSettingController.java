@@ -21,7 +21,11 @@ public class SiteSettingController {
         List<SiteSetting> settingsList = siteSettingRepository.findAll();
         Map<String, String> map = settingsList.stream()
                 .collect(Collectors.toMap(SiteSetting::getSettingKey, SiteSetting::getSettingValue, (v1, v2) -> v2));
-        return ResponseEntity.ok(map);
+        return ResponseEntity.ok()
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .body(map);
     }
 
     @PostMapping("/api/v1/admin/settings")
