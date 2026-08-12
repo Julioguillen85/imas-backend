@@ -23,6 +23,7 @@ import java.io.File;
 public class NotificationEmailService {
 
     public static final String DEFAULT_NOTIFY_EMAIL = "info@imasagenciaaduanal.com";
+    public static final String DEFAULT_TEST_EMAIL = "info@imasagenciaaduanal.com";
 
     @Autowired(required = false)
     private JavaMailSender mailSender;
