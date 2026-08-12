@@ -84,6 +84,9 @@ public class NotificationEmailService {
                     String senderAddr = (fromEmail != null && !fromEmail.isBlank()) ? fromEmail : DEFAULT_TEST_EMAIL;
                     helper.setFrom(senderAddr);
                     helper.setTo(recipient);
+                    if (lead.getEmail() != null && lead.getEmail().contains("@")) {
+                        helper.setReplyTo(lead.getEmail().trim());
+                    }
                     helper.setSubject(subject);
                     helper.setText(htmlContent, true);
 
