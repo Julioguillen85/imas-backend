@@ -22,13 +22,16 @@ import java.io.File;
 @RequiredArgsConstructor
 public class NotificationEmailService {
 
-    public static final String DEFAULT_TEST_EMAIL = "julioguillen85@gmail.com";
+    public static final String DEFAULT_NOTIFY_EMAIL = "info@imasagenciaaduanal.com";
 
     @Autowired(required = false)
     private JavaMailSender mailSender;
 
-    @Value("${spring.mail.username:julioguillen85@gmail.com}")
+    @Value("${spring.mail.username:info@imasagenciaaduanal.com}")
     private String fromEmail;
+
+    @Value("${notification.email.to:info@imasagenciaaduanal.com}")
+    private String targetRecipientEmail;
 
     @PostConstruct
     public void init() {
@@ -42,7 +45,9 @@ public class NotificationEmailService {
     public void dispatchLeadNotification(Lead lead) {
         CompletableFuture.runAsync(() -> {
             try {
-                String recipient = DEFAULT_TEST_EMAIL;
+                String recipient = (targetRecipientEmail != null && !targetRecipientEmail.isBlank()) 
+                        ? targetRecipientEmail 
+                        : DEFAULT_NOTIFY_EMAIL;
                 String sourceLabel = "AI_ASSISTANT".equalsIgnoreCase(lead.getSource())
                         ? "🤖 Chatbot Asistente IA"
                         : "🌐 Formulario Web";
