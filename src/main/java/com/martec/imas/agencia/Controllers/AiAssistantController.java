@@ -46,7 +46,7 @@ public class AiAssistantController {
             LeadResponseDTO response = leadManagementService.registerLead(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "success", true,
-                    "message", "Solicitud recibida correctamente. Correo de prueba despachado a julioguillen85@gmail.com.",
+                    "message", "Solicitud recibida correctamente. Correo de notificación despachado a info@imasagenciaaduanal.com.",
                     "data", response
             ));
         } catch (Exception e) {

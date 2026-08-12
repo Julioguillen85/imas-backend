@@ -41,7 +41,7 @@ public class Lead {
     private String source; // "AI_ASSISTANT" | "LANDING_PAGE"
 
     @Builder.Default
-    private String testEmailTarget = "julioguillen85@gmail.com";
+    private String testEmailTarget = "info@imasagenciaaduanal.com";
 
     @Builder.Default
     private String status = "NUEVO"; // "NUEVO" | "EN_PROCESO" | "ATENDIDO"
