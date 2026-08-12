@@ -46,7 +46,7 @@ public class DataInitializer implements CommandLineRunner {
                     .title("Maniobras y Logística de Carga en Manzanillo")
                     .subtitle("Despacho aduanal y gestión logística integral en el puerto más importante de México")
                     .videoUrl("/videos/hero1.mp4")
-                    .badgeText("Operación Logística en Vivo")
+                    .badgeText("Operación Logística")
                     .displayOrder(1)
                     .isActive(true)
                     .build());
@@ -55,7 +55,7 @@ public class DataInitializer implements CommandLineRunner {
                     .title("Despacho Aduanal & Comercio Exterior")
                     .subtitle("Agilidad, cumplimiento normativo y asesoría especializada para tus operaciones")
                     .videoUrl("/videos/hero2.mp4")
-                    .badgeText("Cumplimiento SAT & NOMs")
+                    .badgeText("APEGADOS A LA LEGALIDAD")
                     .displayOrder(2)
                     .isActive(true)
                     .build());
@@ -144,7 +144,7 @@ public class DataInitializer implements CommandLineRunner {
 
             siteSettingRepository.save(SiteSetting.builder()
                     .settingKey("footer_address")
-                    .settingValue("Puerto de Manzanillo, Colima, México")
+                    .settingValue("Av. Paseo de las gaviotas #190, Col. Valle de las garzas.")
                     .section("footer")
                     .description("Dirección física").build());
 
@@ -206,9 +206,9 @@ public class DataInitializer implements CommandLineRunner {
 
                 serviceRepository.save(Service.builder()
                         .title("Trámites Aduanales")
-                        .shortDescription("Despacho ágil y apegado a la normativa SAT y regulaciones vigentes.")
+                        .shortDescription("Despacho ágil y apegado a la normativa y regulaciones vigentes.")
                         .fullDescription("Despacho aduanal de importación y exportación apegado 100% a la legislación aduanera vigente. Clasificación arancelaria, cumplimiento de Normas Oficiales Mexicanas (NOMs) y regulación no arancelaria.")
-                        .features("[\"Despacho Impo/Expo\", \"Clasificación arancelaria\", \"Cumplimiento NOMs\"]")
+                        .features("[\"Despacho de Importación / Exportación\", \"Clasificación arancelaria\", \"Cumplimiento NOMs\"]")
                         .icon("FileCheck2")
                         .category(tramites)
                         .isActive(true)
@@ -251,8 +251,8 @@ public class DataInitializer implements CommandLineRunner {
                 serviceRepository.save(Service.builder()
                         .title("Asesoría Legal Aduanera")
                         .shortDescription("Respaldo jurídico especializado ante autoridades y comercio exterior.")
-                        .fullDescription("Defensa legal, prevención de PAMA (Procedimiento Administrativo en Materia Aduanera), consultoría en Tratados de Libre Comercio e impugnaciones ante autoridades fiscales y aduaneras.")
-                        .features("[\"Prevención de PAMA\", \"Consultoría en TLCs\", \"Defensa jurídica aduanera\"]")
+                        .fullDescription("Defensa legal, consultoría en Tratados de Libre Comercio e impugnaciones ante autoridades fiscales y aduaneras.")
+                        .features("[\"Consultoría en TLCs\", \"Defensa jurídica aduanera\", \"Asesoría en regulaciones\"]")
                         .icon("Scale")
                         .category(tramites)
                         .isActive(true)
@@ -261,6 +261,55 @@ public class DataInitializer implements CommandLineRunner {
 
                 System.out.println(">>> Base de datos inicializada con categorías y servicios de IMAS Agencia.");
             }
+        }
+
+        // 6. Automated live update & synchronization for existing database records
+        try {
+            heroVideoRepository.findAll().forEach(hv -> {
+                boolean changed = false;
+                if (hv.getBadgeText() != null && hv.getBadgeText().contains("SAT")) {
+                    hv.setBadgeText("APEGADOS A LA LEGALIDAD");
+                    changed = true;
+                }
+                if (hv.getBadgeText() != null && hv.getBadgeText().contains("en Vivo")) {
+                    hv.setBadgeText("Operación Logística");
+                    changed = true;
+                }
+                if (changed) {
+                    heroVideoRepository.save(hv);
+                }
+            });
+
+            serviceRepository.findAll().forEach(srv -> {
+                boolean changed = false;
+                if (srv.getTitle() != null && srv.getTitle().equalsIgnoreCase("Trámites Aduanales")) {
+                    srv.setShortDescription("Despacho ágil y apegado a la normativa y regulaciones vigentes.");
+                    srv.setFeatures("[\"Despacho de Importación / Exportación\", \"Clasificación arancelaria\", \"Cumplimiento NOMs\"]");
+                    changed = true;
+                }
+                if (srv.getTitle() != null && srv.getTitle().equalsIgnoreCase("Asesoría Legal Aduanera")) {
+                    srv.setFullDescription("Defensa legal, consultoría en Tratados de Libre Comercio e impugnaciones ante autoridades fiscales y aduaneras.");
+                    srv.setFeatures("[\"Consultoría en TLCs\", \"Defensa jurídica aduanera\", \"Asesoría en regulaciones\"]");
+                    changed = true;
+                }
+                if (changed) {
+                    serviceRepository.save(srv);
+                }
+            });
+
+            siteSettingRepository.findById("footer_phone").ifPresent(setting -> {
+                setting.setSettingValue("+52 (314) 105 3428");
+                siteSettingRepository.save(setting);
+            });
+
+            siteSettingRepository.findById("footer_address").ifPresent(setting -> {
+                if (setting.getSettingValue() != null && (setting.getSettingValue().contains("Puerto de Manzanillo") || setting.getSettingValue().contains("Manzanillo"))) {
+                    setting.setSettingValue("Av. Paseo de las gaviotas #190, Col. Valle de las garzas.");
+                    siteSettingRepository.save(setting);
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("Advertencia al sincronizar datos existentes: " + e.getMessage());
         }
     }
 }

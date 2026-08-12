@@ -170,7 +170,7 @@ public class ImasAiService {
             }
         } else {
             sb.append("• 🚢 **Despacho y Trámites Aduanales:** Gestión, manejo y liberación de mercancías con apego 100% a la legalidad.\n\n");
-            sb.append("• 📑 **Alta y Reactivación en Padrón de Importadores:** Asesoría y regularización ante SAT y ANAM.\n\n");
+            sb.append("• 📑 **Alta y Reactivación en Padrón de Importadores:** Asesoría y regularización de padrones.\n\n");
             sb.append("• 🔒 **Consolidación, Desconsolidación y Resguardo:** Patios, bodegas seguras y almacenaje en Manzanillo.\n\n");
             sb.append("• 🛠️ **Servicios Operativos Portuarios:** Etiquetado NOM, acondicionamiento y lavado/sanitizado de contenedores.\n\n");
             sb.append("• 🚛 **Flete Marítimo y Terrestre:** Transporte nacional e internacional con monitoreo GPS 24/7.\n\n");
@@ -250,7 +250,7 @@ public class ImasAiService {
         if (query.contains("servicios") || query.contains("ofrecen") || query.contains("opciones") || query.contains("que hacen")) {
             return "En **IMAS Agencia Aduanal** te ofrecemos soluciones integrales para tus operaciones de comercio exterior en Manzanillo:\n\n"
                     + "🚢 **Despacho y Trámites Aduanales:** Liberación ágil y revisión documental con apego 100% a la legalidad.\n\n"
-                    + "📑 **Alta y Reactivación en Padrón de Importadores:** Diagnóstico y regularización ante SAT y ANAM.\n\n"
+                    + "📑 **Alta y Reactivación en Padrón de Importadores:** Diagnóstico y regularización de padrones.\n\n"
                     + "🔒 **Consolidación, Desconsolidación y Resguardo:** Patios y bodegas seguras para tu mercancía.\n\n"
                     + "🛠️ **Servicios Operativos Portuarios:** Etiquetado NOM, acondicionamiento y lavado de contenedores.\n\n"
                     + "🚛 **Flete Marítimo y Terrestre:** Cobertura nacional e internacional con monitoreo GPS 24/7.\n\n"

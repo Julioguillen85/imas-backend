@@ -4,6 +4,7 @@ import com.martec.imas.agencia.dto.LeadRequestDTO;
 import com.martec.imas.agencia.dto.LeadResponseDTO;
 import com.martec.imas.agencia.service.LeadManagementService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +14,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/public/leads")
 @RequiredArgsConstructor
+@Slf4j
 public class PublicLeadController {
 
     private final LeadManagementService leadManagementService;
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> submitLead(@RequestBody LeadRequestDTO request) {
+        log.info("📩 [HTTP REQUEST RECEIVED] POST /api/v1/public/leads - Cliente: {}, Email: {}", request.getName(), request.getEmail());
         LeadResponseDTO response = leadManagementService.registerLead(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "success", true,
