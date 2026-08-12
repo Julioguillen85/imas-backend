@@ -183,7 +183,7 @@ public class DataInitializer implements CommandLineRunner {
             // 5. Seed Initial Services
             if (serviceRepository.count() == 0) {
                 serviceRepository.save(Service.builder()
-                        .title("Resguardo de Mercancía")
+                        .title("Resguardo de mercancía")
                         .shortDescription("Almacenaje y custodia segura de tu carga en todo momento.")
                         .fullDescription("Contamos con infraestructura y patios estratégicamente ubicados en Manzanillo para el resguardo, almacenaje y custodia de carga general, sobredimensionada y de alto valor con vigilancia las 24 horas del día.")
                         .features("[\"Vigilancia 24/7\", \"Patios estratégicos en Manzanillo\", \"Carga general y sobredimensionada\"]")
@@ -194,7 +194,7 @@ public class DataInitializer implements CommandLineRunner {
                         .build());
 
                 serviceRepository.save(Service.builder()
-                        .title("Flete Marítimo y Terrestre")
+                        .title("Flete marítimo y terrestre")
                         .shortDescription("Soluciones multimodales para mover tu carga por mar y tierra.")
                         .fullDescription("Coordinación eficiente de transporte terrestre y multimodal. Conectamos el Puerto de Manzanillo con los principales corredores industriales de México y el mundo con monitoreo GPS en tiempo real.")
                         .features("[\"Monitoreo GPS 24/7\", \"Transporte terrestre y multimodal\", \"Cobertura nacional e internacional\"]")
@@ -205,7 +205,7 @@ public class DataInitializer implements CommandLineRunner {
                         .build());
 
                 serviceRepository.save(Service.builder()
-                        .title("Trámites Aduanales")
+                        .title("Trámites aduanales")
                         .shortDescription("Despacho ágil y apegado a la normativa y regulaciones vigentes.")
                         .fullDescription("Despacho aduanal de importación y exportación apegado 100% a la legislación aduanera vigente. Clasificación arancelaria, cumplimiento de Normas Oficiales Mexicanas (NOMs) y regulación no arancelaria.")
                         .features("[\"Despacho de Importación / Exportación\", \"Clasificación arancelaria\", \"Cumplimiento NOMs\"]")
@@ -216,7 +216,7 @@ public class DataInitializer implements CommandLineRunner {
                         .build());
 
                 serviceRepository.save(Service.builder()
-                        .title("Consolidación y Desconsolidación")
+                        .title("Consolidación, desconsolidación y resguardo de mercancía")
                         .shortDescription("Gestión experta de contenedores y resguardo de mercancía.")
                         .fullDescription("Servicios de vaciado y llenado de contenedores (FCL / LCL), desconsolidación de carga de grupaje, emplayado, etiquetado y clasificación previa para la correcta liberación en aduana.")
                         .features("[\"FCL / LCL\", \"Vaciado y llenado\", \"Etiquetado y emplayado\"]")
@@ -227,7 +227,7 @@ public class DataInitializer implements CommandLineRunner {
                         .build());
 
                 serviceRepository.save(Service.builder()
-                        .title("Lavado y Sanitización de Contenedores")
+                        .title("Lavado de contenedores")
                         .shortDescription("Servicio de limpieza especializado de contenedores en puerto.")
                         .fullDescription("Sanitización y acondicionamiento especializado de unidades de transporte y contenedores según exigencias internacionales y requerimientos de salubridad e inspección aduanera.")
                         .features("[\"Sanitización certificada\", \"Normativa internacional\", \"Inspección aduanera\"]")
@@ -238,28 +238,28 @@ public class DataInitializer implements CommandLineRunner {
                         .build());
 
                 serviceRepository.save(Service.builder()
-                        .title("Coordinación con Proveedores")
+                        .title("Asesoría para el alta y/o reactivación, en el padrón de importadores")
+                        .shortDescription("Gestión y regularización para tu registro oficial ante la autoridad aduanera.")
+                        .fullDescription("Asesoría jurídica y administrativa para el trámite de alta, reincorporación o reactivación en el Padrón de Importadores y Padrón de Importadores de Sectores Específicos.")
+                        .features("[\"Alta en Padrón de Importadores\", \"Reactivación de suspensión\", \"Asesoría jurídica y fiscal\"]")
+                        .icon("Scale")
+                        .category(tramites)
+                        .isActive(true)
+                        .displayOrder(6)
+                        .build());
+
+                serviceRepository.save(Service.builder()
+                        .title("Coordinación con proveedores desde origen")
                         .shortDescription("Gestión y comunicación directa con proveedores desde el origen.")
                         .fullDescription("Enlace directo con tus proveedores extranjeros en China, Asia, Europa y América Latina para asegurar la correcta emisión de documentos (BL, Facturas, Certificados de Origen) antes del arribo al puerto.")
                         .features("[\"Revisión documental en origen\", \"Contacto con Asia/Europa/LATAM\", \"Validación de BL y Facturas\"]")
                         .icon("Globe2")
                         .category(transporte)
                         .isActive(true)
-                        .displayOrder(6)
-                        .build());
-
-                serviceRepository.save(Service.builder()
-                        .title("Asesoría Legal Aduanera")
-                        .shortDescription("Respaldo jurídico especializado ante autoridades y comercio exterior.")
-                        .fullDescription("Defensa legal, consultoría en Tratados de Libre Comercio e impugnaciones ante autoridades fiscales y aduaneras.")
-                        .features("[\"Consultoría en TLCs\", \"Defensa jurídica aduanera\", \"Asesoría en regulaciones\"]")
-                        .icon("Scale")
-                        .category(tramites)
-                        .isActive(true)
                         .displayOrder(7)
                         .build());
 
-                System.out.println(">>> Base de datos inicializada con categorías y servicios de IMAS Agencia.");
+                System.out.println(">>> Base de datos inicializada con los 7 servicios oficiales de IMAS Agencia.");
             }
         }
 
@@ -282,14 +282,28 @@ public class DataInitializer implements CommandLineRunner {
 
             serviceRepository.findAll().forEach(srv -> {
                 boolean changed = false;
-                if (srv.getTitle() != null && srv.getTitle().equalsIgnoreCase("Trámites Aduanales")) {
-                    srv.setShortDescription("Despacho ágil y apegado a la normativa y regulaciones vigentes.");
-                    srv.setFeatures("[\"Despacho de Importación / Exportación\", \"Clasificación arancelaria\", \"Cumplimiento NOMs\"]");
+                if (srv.getId() == 4 || (srv.getTitle() != null && srv.getTitle().contains("Consolidación"))) {
+                    srv.setTitle("Consolidación, desconsolidación y resguardo de mercancía");
                     changed = true;
                 }
-                if (srv.getTitle() != null && srv.getTitle().equalsIgnoreCase("Asesoría Legal Aduanera")) {
-                    srv.setFullDescription("Defensa legal, consultoría en Tratados de Libre Comercio e impugnaciones ante autoridades fiscales y aduaneras.");
-                    srv.setFeatures("[\"Consultoría en TLCs\", \"Defensa jurídica aduanera\", \"Asesoría en regulaciones\"]");
+                if (srv.getId() == 5 || (srv.getTitle() != null && srv.getTitle().contains("Lavado"))) {
+                    srv.setTitle("Lavado de contenedores");
+                    changed = true;
+                }
+                if (srv.getId() == 6 || (srv.getTitle() != null && srv.getTitle().contains("Coordinación"))) {
+                    srv.setTitle("Asesoría para el alta y/o reactivación, en el padrón de importadores");
+                    srv.setShortDescription("Gestión y regularización para tu registro oficial ante la autoridad aduanera.");
+                    srv.setFullDescription("Asesoría jurídica y administrativa para el trámite de alta, reincorporación o reactivación en el Padrón de Importadores y Padrón de Importadores de Sectores Específicos.");
+                    srv.setFeatures("[\"Alta en Padrón de Importadores\", \"Reactivación de suspensión\", \"Asesoría jurídica y fiscal\"]");
+                    srv.setIcon("Scale");
+                    changed = true;
+                }
+                if (srv.getId() == 7 || (srv.getTitle() != null && srv.getTitle().contains("Asesoría Legal"))) {
+                    srv.setTitle("Coordinación con proveedores desde origen");
+                    srv.setShortDescription("Gestión y comunicación directa con proveedores desde el origen.");
+                    srv.setFullDescription("Enlace directo con tus proveedores extranjeros en China, Asia, Europa y América Latina para asegurar la correcta emisión de documentos (BL, Facturas, Certificados de Origen) antes del arribo al puerto.");
+                    srv.setFeatures("[\"Revisión documental en origen\", \"Contacto con Asia/Europa/LATAM\", \"Validación de BL y Facturas\"]");
+                    srv.setIcon("Globe2");
                     changed = true;
                 }
                 if (changed) {
