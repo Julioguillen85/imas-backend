@@ -17,6 +17,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import java.io.File;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -33,6 +42,12 @@ public class NotificationEmailService {
 
     @Value("${notification.email.to:info@imasagenciaaduanal.com}")
     private String targetRecipientEmail;
+
+    @Value("${resend.api.key:}")
+    private String resendApiKey;
+
+    @Value("${resend.from.email:onboarding@resend.dev}")
+    private String resendFromEmail;
 
     @PostConstruct
     public void init() {
@@ -77,6 +92,15 @@ public class NotificationEmailService {
 
                 String htmlContent = buildHtmlTemplate(lead, formattedDate, sourceLabel, recipient);
 
+                String replyTo = (lead.getEmail() != null && lead.getEmail().contains("@")) ? lead.getEmail().trim() : null;
+
+                // 1. Intentar envío ultrarrápido vía Resend HTTP API (Puerto 443 - Libre de bloqueos cloud)
+                if (sendViaResendApi(recipient, subject, htmlContent, replyTo)) {
+                    log.info("🎉 Notificación de correo entregada exitosamente mediante Resend API.");
+                    return;
+                }
+
+                // 2. Fallback: Intentar envío por JavaMailSender (SMTP)
                 if (mailSender != null) {
                     log.info("▶️ [SMTP INIT] Creando MimeMessage para enviar correo...");
                     MimeMessage message = mailSender.createMimeMessage();
@@ -84,8 +108,8 @@ public class NotificationEmailService {
                     String senderAddr = (fromEmail != null && !fromEmail.isBlank()) ? fromEmail : DEFAULT_TEST_EMAIL;
                     helper.setFrom(senderAddr);
                     helper.setTo(recipient);
-                    if (lead.getEmail() != null && lead.getEmail().contains("@")) {
-                        helper.setReplyTo(lead.getEmail().trim());
+                    if (replyTo != null) {
+                        helper.setReplyTo(replyTo);
                     }
                     helper.setSubject(subject);
                     helper.setText(htmlContent, true);
@@ -105,16 +129,58 @@ public class NotificationEmailService {
                         log.warn("⚠️ No se pudo adjuntar el logo oficial como inline CID: {}", imgEx.getMessage());
                     }
 
-                    log.info("▶️ [SMTP SENDING] Conectando a Gmail SMTP para entregar mensaje a {}...", recipient);
+                    log.info("▶️ [SMTP SENDING] Conectando a servidor SMTP para entregar mensaje a {}...", recipient);
                     mailSender.send(message);
                     log.info("✅ [SMTP SUCCESS] Correo enviado exitosamente a {}", recipient);
                 } else {
-                    log.warn("⚠️ JavaMailSender no está inicializado (falta credencial SMTP en application.properties o SPRING_MAIL_PASSWORD)");
+                    log.warn("⚠️ JavaMailSender no está inicializado y Resend API no estuvo disponible.");
                 }
             } catch (Throwable t) {
-                log.error("❌ Error grave o excepción al enviar correo por SMTP a {}: ", DEFAULT_TEST_EMAIL, t);
+                log.error("❌ Error grave al enviar notificación de correo: ", t);
             }
         });
+    }
+
+    private boolean sendViaResendApi(String recipient, String subject, String htmlContent, String replyToEmail) {
+        if (resendApiKey == null || resendApiKey.isBlank()) {
+            return false;
+        }
+        try {
+            log.info("🚀 [RESEND API] Despachando correo por Resend HTTP API (Puerto 443) a {}...", recipient);
+            HttpClient client = HttpClient.newHttpClient();
+
+            Map<String, Object> payload = new HashMap<>();
+            String fromHeader = (resendFromEmail != null && !resendFromEmail.isBlank()) ? resendFromEmail : "onboarding@resend.dev";
+            payload.put("from", fromHeader);
+            payload.put("to", List.of(recipient));
+            payload.put("subject", subject);
+            payload.put("html", htmlContent);
+            if (replyToEmail != null && !replyToEmail.isBlank()) {
+                payload.put("reply_to", replyToEmail);
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonBody = mapper.writeValueAsString(payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.resend.com/emails"))
+                    .header("Authorization", "Bearer " + resendApiKey.trim())
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                log.info("✅ [RESEND API SUCCESS] Correo despachado exitosamente vía Resend API. Response: {}", response.body());
+                return true;
+            } else {
+                log.warn("⚠️ [RESEND API WARN] Resend API respondió status {}: {}", response.statusCode(), response.body());
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("❌ [RESEND API ERROR] Error conectando con Resend API: {}", e.getMessage());
+            return false;
+        }
     }
 
     private String buildHtmlTemplate(Lead lead, String formattedDate, String sourceLabel, String recipient) {
